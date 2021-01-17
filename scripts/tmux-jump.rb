@@ -15,6 +15,7 @@ RESTORE_NORMAL_SCREEN = "\e[?1049l"
 
 # CONFIG
 KEYS_POSITION = ENV['JUMP_KEYS_POSITION']
+CONTRAST = ENV['JUMP_CONTRAST']
 KEYS = 'jfhgkdlsa'.each_char.to_a
 Config = Struct.new(
   :pane_nr,
@@ -148,7 +149,12 @@ def draw_keys_onto_tty(screen_chars, positions, keys, key_len)
     cursor = 0
     positions.each_with_index do |pos, i|
       tty << "#{GRAY}#{screen_chars[cursor..pos-1].gsub("\n", "\n\r")}"
-      tty << "#{RED}#{keys[i]}"
+      tty << "#{RED}"
+      if CONTRAST == "1"
+        tty << "[#{keys[i]}]"
+      else
+        tty << "#{keys[i]}"
+      end
       cursor = pos + key_len - (KEYS_POSITION == 'off_left' ? key_len : 0)
     end
     tty << "#{GRAY}#{screen_chars[cursor..-1].gsub("\n", "\n\r")}"
